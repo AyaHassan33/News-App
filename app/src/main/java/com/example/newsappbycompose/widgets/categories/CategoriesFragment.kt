@@ -1,4 +1,4 @@
-package com.example.newsappbycompose.widgets
+package com.example.newsappbycompose.widgets.categories
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -24,7 +24,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.newsappbycompose.Constants
 import com.example.newsappbycompose.Conts
@@ -60,6 +59,7 @@ fun CategoryCard(item : Category,position :Int ,navHostController: NavHostContro
         modifier = Modifier.padding(horizontal = 13.dp, vertical = 4.dp),
         onClick = {
                   navHostController.navigate("${Conts.NEWS_ROUTE}/${item.apiID}")
+          //  navHostController.popBackStack()
         },
         shape = if (position % 2 == 0) RoundedCornerShape(
             topStart = 16.dp,

@@ -4,11 +4,8 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -19,24 +16,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ScrollableTabRow
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -48,18 +38,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.newsappbycompose.api.APIManager
 import com.example.newsappbycompose.api.model.SourceItem
-import com.example.newsappbycompose.api.model.SourcesResponse
 import com.example.newsappbycompose.ui.theme.NewsAppByComposeTheme
-import com.example.newsappbycompose.widgets.CategoriesContent
+import com.example.newsappbycompose.widgets.categories.CategoriesContent
 import com.example.newsappbycompose.widgets.DrawerBody
 import com.example.newsappbycompose.widgets.DrawerHeader
-import com.example.newsappbycompose.widgets.NewsFragment
+import com.example.newsappbycompose.widgets.SettingsContent
+import com.example.newsappbycompose.widgets.news.NewsFragment
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class MainActivity : ComponentActivity() {
 
@@ -72,21 +58,25 @@ class MainActivity : ComponentActivity() {
             NewsAppByComposeTheme {
                 // A surface container using the 'background' color from the theme
                 var sourcesList : MutableState<List<SourceItem>>  = remember{ mutableStateOf(listOf()) }
+                val navController = rememberNavController()
               // request
                
                 val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+                val scope = rememberCoroutineScope()
                 ModalNavigationDrawer(drawerContent = {
                     Column(modifier = Modifier
                         .fillMaxSize()) {
                         DrawerHeader()
-                        DrawerBody()
+                        DrawerBody(navController) {
+                            scope.launch { drawerState.close() }
+                        }
                     }
                 }, drawerState = drawerState) {
                     Scaffold(
                         topBar = { NewsAppBar(drawerState) })
                     {
                       //  NewsSourcesTabs(sourcesItemList = sourcesList.value)
-                        val navController = rememberNavController()
+
                         NavHost(
                             navController = navController,
                             startDestination = Conts.CATEGORIES_ROUTE,
@@ -104,6 +94,9 @@ class MainActivity : ComponentActivity() {
                                     val argument = it.arguments?.getString("category")
                                     NewsFragment(argument)
 
+                            }
+                            composable(route = Conts.SETTINGS){
+                                SettingsContent()
                             }
                         }
                     }

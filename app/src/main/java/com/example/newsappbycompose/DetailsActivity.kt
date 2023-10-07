@@ -100,13 +100,13 @@ fun ArticlesDetailsContent() {
                 .align(Alignment.End)
         ) {
             Text(
-                text = "View Full Article",
+                text = "articlesItem.content",
                 modifier = Modifier.padding(3.dp),
                 style = TextStyle(fontSize = 14.sp, color = colorResource(id = R.color.black_color))
             )
             Image(
                 painter = painterResource(id = R.drawable.icon),
-                contentDescription = "",
+                        contentDescription = "",
                 modifier = Modifier.padding(6.dp)
             )
 
