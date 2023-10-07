@@ -18,6 +18,9 @@ class NewsViewModel :ViewModel() {
     val sourcesList = mutableStateOf<List<SourceItem>>((listOf()))
     var selectedIndex = mutableStateOf(0)
     val newsList = mutableStateOf<List<ArticlesItem>?>(listOf())
+    val list= mutableStateOf<List<ArticlesItem>>((listOf()))
+
+
 
 
     fun getNewsBySource(sourceItem: SourceItem, newsResponseState: MutableState<List<ArticlesItem>?>) {
@@ -28,6 +31,7 @@ class NewsViewModel :ViewModel() {
                 override fun onResponse(call: Call<NewsResponse>, response: Response<NewsResponse>) {
                     val newsResponse = response.body()
                     newsResponseState.value = newsResponse?.articles
+                    list.value = newsResponseState.value?: listOf()
 
                 }
 

@@ -2,6 +2,7 @@ package com.example.newsappbycompose.widgets.news
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -45,9 +46,11 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import com.example.newsappbycompose.Conts
 
 @Composable
-fun NewsFragment(category: String? ,viewModel: NewsViewModel =viewModel()) {
+fun NewsFragment(category: String? ,viewModel: NewsViewModel =viewModel(),navHostController: NavHostController) {
 
 
     viewModel.getNewsSources(category,viewModel.sourcesList)
@@ -59,31 +62,36 @@ fun NewsFragment(category: String? ,viewModel: NewsViewModel =viewModel()) {
         ))
     {
         NewsSourcesTabs(viewModel.sourcesList.value,viewModel.newsList)
-        NewsList(articlesList = viewModel.newsList.value ?: listOf())
+        NewsList(articlesList = viewModel.newsList.value ?: listOf(), navHostController = navHostController)
+
     }
 }
 @Composable
-fun NewsList(articlesList: List<ArticlesItem>) {
+fun NewsList(articlesList: List<ArticlesItem>,navHostController: NavHostController) {
     LazyColumn {
         items(articlesList.size) {
-            NewsCard(articlesItem = articlesList.get(it))
+            NewsCard(articlesItem = articlesList.get(it)){
+                navHostController.navigate(Conts.ARTICLES_ITEM)
+
+            }
         }
     }
 }
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun NewsCard(articlesItem: ArticlesItem) {
+fun NewsCard(articlesItem: ArticlesItem,onOpenDetails : ()-> Unit) {
     val context = LocalContext.current
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp, horizontal = 12.dp),
-        onClick = {
-            /*val intent= Intent(context,DetailsActivity::class.java)
+            .padding(vertical = 4.dp, horizontal = 12.dp)
+            .clickable {
+                onOpenDetails()
+                /*val intent= Intent(context,DetailsActivity::class.java)
             intent.putExtra(Conts.ARTICLES_ITEM,articlesItem)
             context.startActivity(intent)*/
-        }
+            }
     ){
         GlideImage(
             model = articlesItem.urlToImage ?: "",
@@ -159,7 +167,7 @@ fun NewsSourcesTabs(
 @Preview(name = "News Card", showSystemUi = true)
 @Composable
 fun NewsCardPreview() {
-    NewsCard(
+    /*NewsCard(
         articlesItem = ArticlesItem(
             "10 / 9 / 2023",
             "BBC News",
@@ -167,5 +175,5 @@ fun NewsCardPreview() {
             LoremIpsum(15).toString(), title = "Title ", content = LoremIpsum(20).toString()
 
         )
-    )
+    )*/
 }
