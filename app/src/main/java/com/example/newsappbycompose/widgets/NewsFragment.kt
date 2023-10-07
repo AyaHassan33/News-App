@@ -3,7 +3,6 @@ package com.example.newsappbycompose.widgets
 import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
@@ -79,20 +79,19 @@ fun NewsList(articlesList: List<ArticlesItem>) {
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
+@OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun NewsCard(articlesItem: ArticlesItem) {
     val context = LocalContext.current
     Card(
         modifier = Modifier
         .fillMaxWidth()
-        .padding(vertical = 4.dp, horizontal = 12.dp)
-        .clickable { 
-                val intent= Intent(context,DetailsActivity::class.java)
+        .padding(vertical = 4.dp, horizontal = 12.dp),
+        onClick = {
+            /*val intent= Intent(context,DetailsActivity::class.java)
             intent.putExtra(Conts.ARTICLES_ITEM,articlesItem)
-            context.startActivity(intent)
-
-            }
+            context.startActivity(intent)*/
+        }
     ){
         GlideImage(
             model = articlesItem.urlToImage ?: "",
@@ -107,7 +106,7 @@ fun NewsCard(articlesItem: ArticlesItem) {
         )
         Text(
             text = articlesItem.title ?: "",
-            style = TextStyle(colorResource(id = R.color.colorBlack))
+            style = TextStyle(colorResource(id = R.color.black_color))
         )
         Text(
             text = articlesItem.publishedAt ?: "",
