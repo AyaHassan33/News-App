@@ -1,6 +1,5 @@
-package com.example.newsappbycompose.widgets
+package com.example.newsappbycompose.widgets.news
 
-import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
@@ -36,29 +35,22 @@ import androidx.compose.ui.unit.sp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.newsappbycompose.Constants
-import com.example.newsappbycompose.Conts
-import com.example.newsappbycompose.DetailsActivity
 import com.example.newsappbycompose.R
 import com.example.newsappbycompose.api.APIManager
 import com.example.newsappbycompose.api.model.ArticlesItem
-import com.example.newsappbycompose.api.model.Category
 import com.example.newsappbycompose.api.model.NewsResponse
 import com.example.newsappbycompose.api.model.SourceItem
 import com.example.newsappbycompose.api.model.SourcesResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
-fun NewsFragment(category: String?) {
-    val sourcesList = remember {
-        mutableStateOf<List<SourceItem>>((listOf()))
-    }
-    val newsList = remember {
-        mutableStateOf<List<ArticlesItem>?>(listOf())
-    }
+fun NewsFragment(category: String? ,viewModel: NewsViewModel =viewModel()) {
 
-    getNewsSources(category,sourcesList)
+
+    viewModel.getNewsSources(category,viewModel.sourcesList)
     Column(modifier = Modifier
         .padding(top = 6.dp, bottom = 9.dp)
         .paint(
@@ -66,8 +58,8 @@ fun NewsFragment(category: String?) {
             contentScale = ContentScale.FillBounds
         ))
     {
-        NewsSourcesTabs(sourcesList.value,newsList)
-        NewsList(articlesList = newsList.value ?: listOf())
+        NewsSourcesTabs(viewModel.sourcesList.value,viewModel.newsList)
+        NewsList(articlesList = viewModel.newsList.value ?: listOf())
     }
 }
 @Composable
@@ -85,8 +77,8 @@ fun NewsCard(articlesItem: ArticlesItem) {
     val context = LocalContext.current
     Card(
         modifier = Modifier
-        .fillMaxWidth()
-        .padding(vertical = 4.dp, horizontal = 12.dp),
+            .fillMaxWidth()
+            .padding(vertical = 4.dp, horizontal = 12.dp),
         onClick = {
             /*val intent= Intent(context,DetailsActivity::class.java)
             intent.putExtra(Conts.ARTICLES_ITEM,articlesItem)
@@ -125,25 +117,26 @@ fun NewsCard(articlesItem: ArticlesItem) {
 fun NewsSourcesTabs(
     sourcesItemList : List<SourceItem>,
     newsResponseState: MutableState<List<ArticlesItem>?>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: NewsViewModel = viewModel()
 ) {
-    var selectedIndex by remember{
+  /*  var selectedIndex by remember{
         mutableStateOf(0)
-    }
+    }*/
     if (sourcesItemList.isNotEmpty())
-        ScrollableTabRow(selectedTabIndex = selectedIndex , containerColor = Color.Transparent ,
+        ScrollableTabRow(selectedTabIndex = viewModel.selectedIndex.value , containerColor = Color.Transparent ,
             modifier = Modifier.fillMaxWidth(), edgePadding = 5.dp, divider = {}, indicator = {}) {
             sourcesItemList.forEachIndexed { index, sourceItem ->
-                if (selectedIndex == index) {
-                    getNewsBySource(sourceItem, newsResponseState = newsResponseState)
+                if (viewModel.selectedIndex.value== index) {
+                    viewModel.getNewsBySource(sourceItem, newsResponseState = newsResponseState)
                 }
-                Tab(selected = selectedIndex == index,
+                Tab(selected = viewModel.selectedIndex.value == index,
                     onClick = {
-                        selectedIndex = index
+                        viewModel.selectedIndex.value= index
                     },
                     selectedContentColor = Color.White ,
                     unselectedContentColor = Color(0xFF39A552) ,
-                    modifier = if(selectedIndex==index) Modifier
+                    modifier = if(viewModel.selectedIndex.value==index) Modifier
                         .padding(end = 2.dp)
                         .background(
                             Color(0xFF39A552),
@@ -162,47 +155,7 @@ fun NewsSourcesTabs(
         }
 }
 
-fun getNewsBySource(sourceItem: SourceItem, newsResponseState: MutableState<List<ArticlesItem>?>) {
-    APIManager
-        .getNewsServices()
-        .getNewsBySource(Constants.API_KEY, sourceItem.id ?: "")
-        .enqueue(object : Callback<NewsResponse> {
-            override fun onResponse(call: Call<NewsResponse>, response: Response<NewsResponse>) {
-                val newsResponse = response.body()
-                newsResponseState.value = newsResponse?.articles
 
-            }
-
-            override fun onFailure(call: Call<NewsResponse>, t: Throwable) {
-
-            }
-
-
-        })
-
-}
-
-fun getNewsSources(category: String?,sourcesList :MutableState<List<SourceItem>>){
-    APIManager
-        .getNewsServices()
-        .getNewsSources(Constants.API_KEY,category ?:"")
-        .enqueue(object : Callback<SourcesResponse> {
-            override fun onResponse(
-                call: Call<SourcesResponse>,
-                response: Response<SourcesResponse>
-            ) {
-                val body = response.body()
-                sourcesList.value = (body?.sources ?: listOf()) as List<SourceItem>
-
-            }
-
-            override fun onFailure(call: Call<SourcesResponse>, t: Throwable) {
-
-            }
-
-        })
-
-}
 @Preview(name = "News Card", showSystemUi = true)
 @Composable
 fun NewsCardPreview() {

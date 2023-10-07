@@ -80,5 +80,14 @@ dependencies {
     // navigate compose " Fragments"
     val nav_version = "2.7.4"
     implementation("androidx.navigation:navigation-compose:$nav_version")
+    //viewModel
+    val lifecycle_version = "2.6.2"
+    val arch_version = "2.2.0"
+    // ViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
+    // ViewModel utilities for Compose
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version")
+    // Lifecycle utilities for Compose
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:$lifecycle_version")
 
 }
