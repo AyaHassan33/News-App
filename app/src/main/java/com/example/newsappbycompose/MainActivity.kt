@@ -1,9 +1,11 @@
 package com.example.newsappbycompose
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -33,23 +35,29 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.newsappbycompose.api.model.ArticlesItem
+import com.example.newsappbycompose.api.model.NewsResponse
 import com.example.newsappbycompose.api.model.SourceItem
+import com.example.newsappbycompose.detailsNews.ArticlesDetailsContent
 import com.example.newsappbycompose.ui.theme.NewsAppByComposeTheme
 import com.example.newsappbycompose.widgets.categories.CategoriesContent
 import com.example.newsappbycompose.widgets.DrawerBody
 import com.example.newsappbycompose.widgets.DrawerHeader
 import com.example.newsappbycompose.widgets.SettingsContent
 import com.example.newsappbycompose.widgets.news.NewsFragment
+import com.example.newsappbycompose.widgets.news.NewsViewModel
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
     
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,6 +67,8 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 var sourcesList : MutableState<List<SourceItem>>  = remember{ mutableStateOf(listOf()) }
                 val navController = rememberNavController()
+                val viewModel :NewsViewModel = viewModel()
+                var articles =intent.getSerializableExtra(Conts.ARTICLES_ITEM,ArticlesItem::class.java)
               // request
                
                 val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -92,11 +102,14 @@ class MainActivity : ComponentActivity() {
                             )
                                 {
                                     val argument = it.arguments?.getString("category")
-                                    NewsFragment(argument)
+                                    NewsFragment(argument, navHostController = navController)
 
                             }
                             composable(route = Conts.SETTINGS){
                                 SettingsContent()
+                            }
+                            composable(route=Conts.ARTICLES_ITEM){
+                                ArticlesDetailsContent(articlesItem = ArticlesItem())
                             }
                         }
                     }
