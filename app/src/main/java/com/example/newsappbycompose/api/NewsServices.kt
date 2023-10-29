@@ -11,14 +11,14 @@ interface NewsServices {
 
     //Your API key is: 17585fd1eee8415289af9d44b15dc9b1
     @GET("top-headlines/sources")
-    fun getNewsSources(@Query("apiKey") apiKey : String,
-                       @Query("category") category: String) : Call<SourcesResponse>
+    suspend fun getNewsSources(@Query("apiKey") apiKey : String,
+                       @Query("category") category: String) :SourcesResponse
 
     @GET("everything")
-    fun getNewsBySource(
+    suspend fun getNewsBySource(
         @Query("apiKey") apiKey: String,
         @Query("sources") sources: String,
-    ): Call<NewsResponse>
+    ): NewsResponse
     @GET("everything")
     fun getDetailsByNews(
         @Query("apiKey") apiKey: String,

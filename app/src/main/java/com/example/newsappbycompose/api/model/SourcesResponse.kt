@@ -1,5 +1,7 @@
 package com.example.newsappbycompose.api.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
 data class SourcesResponse(
@@ -10,27 +12,28 @@ data class SourcesResponse(
 	@field:SerializedName("status")
 	val status: String? = null
 )
-
+@Entity
 data class SourceItem(
 
 	@field:SerializedName("country")
-	val country: String? = null,
+	var country: String? = null,
 
 	@field:SerializedName("name")
-	val name: String? = null,
+	var name: String? = null,
 
 	@field:SerializedName("description")
-	val description: String? = null,
+	var description: String? = null,
 
 	@field:SerializedName("language")
-	val language: String? = null,
+	var language: String? = null,
 
+	@PrimaryKey(autoGenerate = false)
 	@field:SerializedName("id")
-	val id: String? = null,
+	var id: String,
 
 	@field:SerializedName("category")
-	val category: String? = null,
+	var category: String? = null,
 
 	@field:SerializedName("url")
-	val url: String? = null
+	var url: String? = null
 )
